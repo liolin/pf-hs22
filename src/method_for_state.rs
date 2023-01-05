@@ -61,7 +61,7 @@ struct Mode {
     change_mode: ModeTransition,
 }
 
-pub struct DataContext {
+struct DataContext {
     hours: u8,
     minutes: u8,
     seconds: u8,
@@ -89,8 +89,10 @@ impl StateMachine {
             data_context: DataContext::new(),
         }
     }
+}
 
-    pub fn display(&self, out: &mut impl Write) -> std::io::Result<()> {
+impl crate::StateMachine for StateMachine {
+    fn display(&self, out: &mut impl Write) -> std::io::Result<()> {
         out.write(
             format!(
                 "{}:{}:{}\n",
@@ -102,15 +104,15 @@ impl StateMachine {
         Ok(())
     }
 
-    pub fn tick(&mut self) {
+    fn tick(&mut self) {
         (self.current_state.tick)(&mut self.data_context);
     }
 
-    pub fn increment(&mut self) {
+    fn increment(&mut self) {
 	(self.current_state.increment)(&mut self.data_context);
     }
 
-    pub fn change_mode(&mut self) {
+    fn change_mode(&mut self) {
         self.current_state = (self.current_state.change_mode)();
     }
 }
